@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-    if (!response.ok) return res.status(response.status).json({ error: data });
+    if (!response.ok) return res.status(response.status).json({ error: JSON.stringify(data) });
     const text = data.content?.map(b => b.text || '').join('') || '';
     res.status(200).json({ text });
   } catch (err) {

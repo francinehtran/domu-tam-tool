@@ -42,7 +42,7 @@ function RunButton({ loading, onClick, label }) {
   );
 }
 
-function ScriptPanel() {
+function ScriptPanel({ visible }) {
   const [input, setInput] = useState('');
   const [client, setClient] = useState('');
   const [type, setType] = useState('Collections / Payment reminder');
@@ -71,7 +71,7 @@ Be specific, concise, and use natural spoken language — this is for a voice bo
   }
 
   return (
-    <div className="panel active">
+    <div style={{ display: visible ? 'block' : 'none' }}>
       <div className="field-group">
         <div className="field-label">Client script / raw call flow</div>
         <textarea value={input} onChange={e => setInput(e.target.value)} placeholder={"Paste the client's existing script here — rough notes, bullet points, anything works.\n\nExample:\n- Greet customer\n- Ask about outstanding balance of $X\n- If they can't pay, offer payment plan\n- Take payment over phone..."} />
@@ -98,7 +98,7 @@ Be specific, concise, and use natural spoken language — this is for a voice bo
   );
 }
 
-function QAPanel() {
+function QAPanel({ visible }) {
   const [transcript, setTranscript] = useState('');
   const [expected, setExpected] = useState('Payment collected');
   const [actual, setActual] = useState('Payment collected');
@@ -127,7 +127,7 @@ SUMMARY: [2-sentence plain-English summary for the client]`;
   }
 
   return (
-    <div className="panel active">
+    <div style={{ display: visible ? 'block' : 'none' }}>
       <div className="field-group">
         <div className="field-label">Call transcript</div>
         <textarea style={{minHeight:130}} value={transcript} onChange={e => setTranscript(e.target.value)} placeholder={"Paste the call transcript here.\n\nExample:\n[00:00] Agent: Hello, may I speak with John Smith?\n[00:04] Customer: Yes, this is John.\n[00:06] Agent: Great, I'm calling about your account balance of $450..."} />
@@ -152,7 +152,7 @@ SUMMARY: [2-sentence plain-English summary for the client]`;
   );
 }
 
-function PromptPanel() {
+function PromptPanel({ visible }) {
   const [issue, setIssue] = useState('');
   const [current, setCurrent] = useState('');
   const [transcript, setTranscript] = useState('');
@@ -178,7 +178,7 @@ TEST SUGGESTION: [how to verify the fix on live calls]`;
   }
 
   return (
-    <div className="panel active">
+    <div style={{ display: visible ? 'block' : 'none' }}>
       <div className="field-group">
         <div className="field-label">Client complaint / issue description</div>
         <textarea value={issue} onChange={e => setIssue(e.target.value)} placeholder="Describe what the client reported. E.g.: 'The agent gives up too quickly when the customer says they can't pay today. It should offer more options before ending the call.'" />
@@ -197,7 +197,7 @@ TEST SUGGESTION: [how to verify the fix on live calls]`;
   );
 }
 
-function TicketPanel() {
+function TicketPanel({ visible }) {
   const [client, setClient] = useState('');
   const [priority, setPriority] = useState('P2 — High (within 24h)');
   const [request, setRequest] = useState('');
@@ -231,7 +231,7 @@ ESTIMATED IMPACT: [how many calls/week affected, what metric improves]`;
   }
 
   return (
-    <div className="panel active">
+    <div style={{ display: visible ? 'block' : 'none' }}>
       <div className="two-col">
         <div className="field-group">
           <div className="field-label">Client</div>
@@ -261,7 +261,7 @@ ESTIMATED IMPACT: [how many calls/week affected, what metric improves]`;
   );
 }
 
-function CompliancePanel() {
+function CompliancePanel({ visible }) {
   const [transcript, setTranscript] = useState('');
   const [client, setClient] = useState('');
   const [type, setType] = useState('FDCPA violation (collections)');
@@ -290,7 +290,7 @@ CLIENT RESPONSE DRAFT: [ready-to-send email addressing the concern professionall
   }
 
   return (
-    <div className="panel active">
+    <div style={{ display: visible ? 'block' : 'none' }}>
       <div className="field-group">
         <div className="field-label">Flagged call transcript</div>
         <textarea style={{minHeight:120}} value={transcript} onChange={e => setTranscript(e.target.value)} placeholder="Paste the transcript of the call that raised the compliance concern..." />
@@ -327,7 +327,7 @@ CLIENT RESPONSE DRAFT: [ready-to-send email addressing the concern professionall
   );
 }
 
-function PerformancePanel() {
+function PerformancePanel({ visible }) {
   const [selectedClient, setSelectedClient] = useState(CLIENTS[0]);
   const [total, setTotal] = useState('');
   const [answered, setAnswered] = useState('');
@@ -362,7 +362,7 @@ CLIENT-READY SUMMARY: [3-4 sentences to send directly to the client contact]`;
   }
 
   return (
-    <div className="panel active">
+    <div style={{ display: visible ? 'block' : 'none' }}>
       <div className="field-group">
         <div className="field-label">Select client</div>
         <div className="clients-row">
@@ -399,11 +399,8 @@ CLIENT-READY SUMMARY: [3-4 sentences to send directly to the client contact]`;
   );
 }
 
-const PANELS = { script: ScriptPanel, qa: QAPanel, prompt: PromptPanel, ticket: TicketPanel, compliance: CompliancePanel, performance: PerformancePanel };
-
 export default function Home() {
   const [activeTab, setActiveTab] = useState('script');
-  const ActivePanel = PANELS[activeTab];
 
   return (
     <>
@@ -431,7 +428,12 @@ export default function Home() {
             </div>
           ))}
         </div>
-        <ActivePanel />
+        <ScriptPanel visible={activeTab === 'script'} />
+        <QAPanel visible={activeTab === 'qa'} />
+        <PromptPanel visible={activeTab === 'prompt'} />
+        <TicketPanel visible={activeTab === 'ticket'} />
+        <CompliancePanel visible={activeTab === 'compliance'} />
+        <PerformancePanel visible={activeTab === 'performance'} />
       </div>
     </>
   );
